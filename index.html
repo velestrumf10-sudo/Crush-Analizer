@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crush Analyzer 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #e8385a;
+    --blush: #f9c6cf;
+    --cream: #fff8f4;
+    --ink: #1a0a10;
+    --muted: #9a7580;
+    --card: #ffffff;
+    --accent: #ff6b8a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Decorative background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,56,90,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -200px; left: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(249,198,207,0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 520px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .header .eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 36px;
+    box-shadow: 0 4px 40px rgba(232,56,90,0.08), 0 1px 3px rgba(26,10,16,0.06);
+    position: relative;
+  }
+
+  .card::before {
+    content: '♥';
+    position: absolute;
+    top: -14px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--rose);
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(232,56,90,0.4);
+  }
+
+  /* Fields */
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--cream);
+    border: 1.5px solid rgba(232,56,90,0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: none;
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: #c5adb4;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(232,56,90,0.1);
+    background: #fff;
+  }
+
+  .field textarea { height: 90px; }
+  .field textarea.tall { height: 110px; }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--rose);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    box-shadow: 0 4px 20px rgba(232,56,90,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(232,56,90,0.4);
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  /* Result */
+  .result-box {
+    margin-top: 28px;
+    padding: 24px;
+    background: linear-gradient(135deg, #fff0f3 0%, #fff8f4 100%);
+    border-radius: 16px;
+    border: 1.5px solid rgba(232,56,90,0.12);
+    display: none;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .result-box.visible {
+    display: block;
+  }
+
+  .result-box .result-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .result-box .result-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(232,56,90,0.2);
+  }
+
+  .result-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+
+  /* Thinking animation */
+  .thinking {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  .thinking span {
+    width: 6px; height: 6px;
+    background: var(--rose);
+    border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .thinking span:nth-child(2) { animation-delay: 0.2s; }
+  .thinking span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Error */
+  .error-text {
+    color: var(--rose);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 11px;
+    color: #c5adb4;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="header">
+    <p class="eyebrow">Powered by Claude AI</p>
+    <h1>Crush <em>Analyzer</em> 💌</h1>
+    <p>Tell me about your crush and I'll read the signs for you</p>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>Their Name</label>
+      <input id="crushName" placeholder="e.g. Alex..." />
+    </div>
+
+    <div class="field">
+      <label>Signs & Behaviors You've Noticed</label>
+      <textarea id="clues" class="tall" placeholder="e.g. they always laugh at my jokes, texted me first 3 times this week, made eye contact across the room..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Message or Convo (optional)</label>
+      <textarea id="message" placeholder="Paste a text or conversation here for deeper analysis..."></textarea>
+    </div>
+
+    <button class="btn" id="analyzeBtn" onclick="analyzeCrush()">✨ Analyze My Crush</button>
+
+    <div class="result-box" id="resultBox">
+      <div class="result-label">Claude's Reading</div>
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <p class="footer">For entertainment purposes — but the heart knows what it knows 💗</p>
+</div>
+
+<script>
+async function analyzeCrush() {
+  const crushName = document.getElementById("crushName").value.trim();
+  const clues = document.getElementById("clues").value.trim();
+  const message = document.getElementById("message").value.trim();
+  const resultEl = document.getElementById("result");
+  const resultBox = document.getElementById("resultBox");
+  const btn = document.getElementById("analyzeBtn");
+
+  if (!crushName || !clues) {
+    resultBox.classList.add("visible");
+    resultEl.innerHTML = `<span class="error-text">Please enter your crush's name and at least one sign or behavior 💭</span>`;
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Reading the signs…";
+  resultBox.classList.add("visible");
+  resultEl.innerHTML = `
+    <div class="thinking">
+      <span></span><span></span><span></span>
+      &nbsp;Analyzing the vibes…
+    </div>`;
+
+  try {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ crushName, clues, message })
+    });
+
+    const data = await response.json();
+
+    if (data.prediction) {
+      resultEl.innerHTML = `<div class="result-text">${data.prediction}</div>`;
+    } else {
+      throw new Error(data.error || "No response");
+    }
+  } catch (err) {
+    resultEl.innerHTML = `<span class="error-text">Oops! Something went wrong — the universe is being mysterious 😅</span>`;
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.textContent = "✨ Analyze My Crush";
+}
+</script>
+</body>
+</html>
